@@ -21,7 +21,7 @@ setup_options = dict(
 		'jinja2',
 		'beautifulsoup4',
 		'markdown',
-		'frontmatter'
+		'python-frontmatter'
 	],
 	test_suite='tests',
 	entry_points={
