@@ -22,7 +22,8 @@ def main():
 @click.option('--verbose', envvar='SPOONBILL_VERBOSE', is_flag=True, default=False, help='Show detailed step by step logging')
 @click.option('--debug', envvar='SPOONBILL_DEBUG', is_flag=True, default=False, help='Show all kinds of low-level messages')
 @click.version_option("1.0", prog_name="spoonbill", message=copyright_string)
-def spoonbill(ctx, *args, **kwargs):
+@click.pass_context
+def spoonbill(ctx, verbose, debug, *args, **kwargs):
 	"""Spoonbill
 
 	Static website generator
@@ -36,7 +37,7 @@ def spoonbill(ctx, *args, **kwargs):
 	loglevel = logging.INFO
 
 	# if debug is on, then output the whole thing to the stream
-	if ctx.obj.debug:
+	if debug:
 		handlers.append(logging.StreamHandler())
 		loglevel = logging.DEBUG
 
@@ -63,8 +64,8 @@ def render_page(templates, template, **data):
 
 
 @spoonbill.command()
-@click.option('--templates', help='Where the templates are located')
-@click.option('--config', help='The default values for the config')
+@click.argument('templates')
+@click.argument('config')
 @click.argument('page')
 def compile(templates, config, page):
 	"""Compile a single markdown file to html"""

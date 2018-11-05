@@ -19,7 +19,7 @@ setup_options = dict(
 		'wheel',
 		'click',
 		'jinja2',
-		'BeautifulSoup',
+		'beautifulsoup4',
 		'markdown',
 		'frontmatter'
 	],
