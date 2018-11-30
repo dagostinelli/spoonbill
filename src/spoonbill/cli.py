@@ -9,6 +9,7 @@ import frontmatter
 import datetime
 import time
 from datetime import date
+import urllib.parse
 
 
 copyright_string = '%(prog)s %(version)s Copyright ' + str(date.today().year) + ' Darryl T. Agostinelli. All Rights Reserved.'
@@ -67,9 +68,15 @@ def render_page(templates, template, **data):
 @click.argument('templates')
 @click.argument('config')
 @click.argument('page')
-def compile(templates, config, page):
+@click.argument('extra', nargs=-1)
+def compile(templates, config, page, extra):
 	"""Compile a single markdown file to html"""
 	try:
+		extra_config = dict()
+		for item in extra:
+			x = item.split('=')
+			extra_config[x[0]] = x[1]
+		
 		with open(config) as defaults_file:
 			default_config = json.load(defaults_file)
 
@@ -78,12 +85,18 @@ def compile(templates, config, page):
 
 		merged = dict()
 		merged.update(default_config)
+		merged.update(extra_config)
 		merged.update(raw_markdown)
 
-		merged['content'] = BeautifulSoup(markdown(md), 'html.parser').prettify()
+		markdown_extensions = merged['markdown_extensions']
+
+		merged['content'] = BeautifulSoup(markdown(md, extensions=markdown_extensions), 'html.parser').prettify()
 
 		if 'canonical' not in raw_markdown.keys():
-			merged['canonical'] = default_config['canonical'] + change_file_extension(page, '.html')
+			if 'canonical_relative_path' in merged:
+				merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], merged['canonical_relative_path'])
+			else:
+				merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], change_file_extension(page, '.html'))
 
 		if 'updated' not in merged.keys():
 			(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(page)
