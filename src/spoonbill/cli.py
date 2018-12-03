@@ -88,7 +88,10 @@ def compile(templates, config, page, extra):
 		merged.update(extra_config)
 		merged.update(raw_markdown)
 
-		markdown_extensions = merged['markdown_extensions']
+		if 'markdown_extensions' in merged:
+			markdown_extensions = merged['markdown_extensions']
+		else:
+			markdown_extensions = []
 
 		merged['content'] = BeautifulSoup(markdown(md, extensions=markdown_extensions), 'html.parser').prettify()
 
