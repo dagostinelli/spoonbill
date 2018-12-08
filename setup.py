@@ -1,4 +1,3 @@
-import sys
 from setuptools import setup, find_packages
 
 version = open('VERSION').read().strip()
@@ -31,16 +30,4 @@ setup_options = dict(
 	}
 )
 
-if 'py2exe' in sys.argv:
-	import py2exe
-	setup_options['options'] = {
-		'py2exe': {
-			'optimize': 0,
-			'skip_archive': True,
-			'dll_excludes': ['crypt32.dll'],
-			'packages': ['urllib', 'httplib']
-		}
-	}
-
 setup(**setup_options)
-

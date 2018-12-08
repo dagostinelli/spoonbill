@@ -76,7 +76,7 @@ def compile(templates, config, page, extra):
 		for item in extra:
 			x = item.split('=')
 			extra_config[x[0]] = x[1]
-		
+
 		with open(config) as defaults_file:
 			default_config = json.load(defaults_file)
 
