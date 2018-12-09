@@ -10,6 +10,7 @@ import datetime
 import time
 from datetime import date
 import urllib.parse
+import traceback
 
 
 copyright_string = '%(prog)s %(version)s Copyright ' + str(date.today().year) + ' Darryl T. Agostinelli. All Rights Reserved.'
@@ -114,4 +115,5 @@ def compile(templates, config, page, extra):
 		print(final)
 	except Exception as e:
 		print('Error processing page: ' + str(page) + ' : ' + str(e))
-
+		traceback.print_exc()
+		exit(1)

@@ -1,0 +1,7 @@
+{
+	"template": "default.html",
+	"title": "Spoonbill",
+	"description": "Static Site Generator",
+	"canonical": "http://github.com/dagostinelli/spoonbill",
+	"root": ""
+}
