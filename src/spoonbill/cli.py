@@ -77,7 +77,18 @@ def compile(templates, config, page, extra):
 		extra_config = dict()
 		for item in extra:
 			x = item.split('=')
-			extra_config[x[0]] = x[1]
+
+			key = x[0]
+			val = x[1]
+
+			# see if val is json
+			try:
+				val = json.loads(val)
+			except:
+				# not json
+				pass
+
+			extra_config[key] = val
 
 		with open(config) as defaults_file:
 			default_config = json.load(defaults_file)

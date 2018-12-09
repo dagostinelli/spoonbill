@@ -27,7 +27,7 @@ lint:
 
 test: prep lint
 	@python3 setup.py test
-	@$(venv_directory)/bin/python3 -m src.spoonbill compile example-data/ example-data/default.json example-data/example1.md canonical_relative_path=/fake/site/index.html classifications='[ { "name": "Fruit", "sort_order": 1, "tag": "fruit" }, { "name": "Meats", "sort_order": 2, "tag": "meats" }, { "name": "Dairy", "sort_order": 3, "tag": "dairy" }, { "name": "Vegetables", "sort_order": 4, "tag": "vegetables" } ] categories=[ { "name": "Canned", "sort_order": 1, "tag": "canned" }, { "name": "Boxed", "sort_order": 2, "tag": "boxed" }, { "name": "Bagged", "sort_order": 3, "tag": "bagged" }, { "name": "Fresh", "sort_order": 4, "tag": "fresh" } ]' > /dev/null
+	@$(venv_directory)/bin/python3 -m src.spoonbill compile example-data/ example-data/default.json example-data/example1.md canonical_relative_path=/fake/site/index.html classifications='[ { "name": "Fruit", "sort_order": 1, "tag": "fruit" }, { "name": "Meats", "sort_order": 2, "tag": "meats" }, { "name": "Dairy", "sort_order": 3, "tag": "dairy" }, { "name": "Vegetables", "sort_order": 4, "tag": "vegetables" } ]' categories='[ { "name": "Canned", "sort_order": 1, "tag": "canned" }, { "name": "Boxed", "sort_order": 2, "tag": "boxed" }, { "name": "Bagged", "sort_order": 3, "tag": "bagged" }, { "name": "Fresh", "sort_order": 4, "tag": "fresh" } ]' > /dev/null
 
 build: prep
 	@python3 setup.py sdist
