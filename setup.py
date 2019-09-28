@@ -9,7 +9,8 @@ requirements = [
 	'jinja2',
 	'beautifulsoup4',
 	'markdown',
-	'python-frontmatter'
+	'python-frontmatter',
+	'python-dateutil'
 ]
 
 setup_options = dict(
@@ -20,7 +21,7 @@ setup_options = dict(
 	url='http://www.darrylagostinelli.com',
 	description='Static website generator',
 	long_description=open('README.md').read().strip(),
-	package_dir={'': 'src'},  # Our packages live under src but src is not a package itself
+	package_dir={'': 'src'},  # package lives under src but src is not a package itself
 	packages=find_packages('src'),
 	include_package_data=True,
 	install_requires=requirements,

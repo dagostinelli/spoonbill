@@ -12,7 +12,8 @@ from datetime import date
 import urllib.parse
 import traceback
 import sys
-
+import glob
+from dateutil.parser import parse as parsedatetime
 
 copyright_string = '%(prog)s %(version)s Copyright ' + str(date.today().year) + ' Darryl T. Agostinelli. All Rights Reserved.'
 
@@ -66,13 +67,7 @@ def render_page(templates, template, **data):
 	return template.render(data)
 
 
-@spoonbill.command()
-@click.argument('templates')
-@click.argument('config')
-@click.argument('page')
-@click.argument('extra', nargs=-1)
-def compile(templates, config, page, extra):
-	"""Compile a single markdown file to html"""
+def compile_page(templates, config, page, extra):
 	try:
 		extra_config = dict()
 		for item in extra:
@@ -106,6 +101,7 @@ def compile(templates, config, page, extra):
 		else:
 			markdown_extensions = []
 
+		merged['content_raw'] = md
 		merged['content'] = BeautifulSoup(markdown(md, extensions=markdown_extensions), 'html.parser').prettify()
 
 		if 'canonical' not in raw_markdown.keys():
@@ -118,14 +114,61 @@ def compile(templates, config, page, extra):
 			(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(page)
 			merged['updated'] = "%s" % time.ctime(mtime)
 
-		merged['year'] = datetime.datetime.now().year
-		merged['templates'] = templates
+		updated = parsedatetime(merged['updated'])
+		merged['updated'] = updated.strftime("%a %b %d, %Y")
+		if not (updated.hour == 0 and updated.minute == 0 and updated.second == 0):
+			merged['updated'] = merged['updated'] + ', ' + updated.strftime("%H:%M:%S")
+
+		merged['year'] = updated.year
+		merged['month'] = updated.month
+		merged['day'] = updated.day
+		merged['templates'] = templates or None
 		merged['page'] = os.path.splitext(os.path.basename(page))[0]
 		merged['template'] = change_file_extension(merged['template'], '.html')
+		return merged
 
-		final = render_page(**merged)
-		print(final)
 	except Exception as e:
 		sys.stderr.write('Error processing page: ' + str(page) + ' : ' + str(e))
 		traceback.print_exc()
 		exit(1)
+
+
+@spoonbill.command()
+@click.argument('templates')
+@click.argument('config')
+@click.argument('page')
+@click.argument('extra', nargs=-1)
+def compile(templates, config, page, extra):
+	"""Compile a single markdown file to html"""
+	# no error handling here, because compile_page has it
+	merged = compile_page(templates, config, page, extra)		
+	final = render_page(**merged)
+	print(final)
+
+
+@spoonbill.command()
+@click.argument('config')
+@click.argument('path')
+@click.argument('extra', nargs=-1)
+def structure(config, path, extra):
+	"""Read all markdown files and make a site structure file"""
+	# no error handling here, because compile_page has it
+	entire_site = list()
+	for page in glob.iglob(path + '**/*.md', recursive=True):
+		merged = compile_page(None, config, page, extra)
+
+		if 'tags' in merged:
+			merged['tags'] = [x.strip() for x in merged['tags'].split(',')]
+
+		if 'content_raw' in merged:
+			merged['snippet'] = merged['content_raw'][:200] + "..."
+
+		# remote certain elements
+		if 'content' in merged: del merged['content']
+		if 'content_raw' in merged: del merged['content_raw']
+		if 'templates' in merged: del merged['templates']
+		if 'template' in merged: del merged['template']
+
+		entire_site.append(merged)
+	
+	print(json.dumps(entire_site))
