@@ -105,10 +105,15 @@ def compile_page(templates, config, page, extra):
 		merged['content'] = BeautifulSoup(markdown(md, extensions=markdown_extensions), 'html.parser').prettify()
 
 		if 'canonical' not in raw_markdown.keys():
+			page_path = page
+
+			if 'canonical_remove_path_prefix' in merged:
+				page_path = page_path[page_path.find(merged['canonical_remove_path_prefix']) + len(merged['canonical_remove_path_prefix']):]
+
 			if 'canonical_relative_path' in merged:
 				merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], merged['canonical_relative_path'])
 			else:
-				merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], change_file_extension(page, '.html'))
+				merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], change_file_extension(page_path, '.html'))
 
 		if 'updated' not in merged.keys():
 			(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(page)
