@@ -177,7 +177,6 @@ def structure(config, path, extra):
 		if 'content' in merged: del merged['content']
 		if 'content_raw' in merged: del merged['content_raw']
 		if 'templates' in merged: del merged['templates']
-		if 'template' in merged: del merged['template']
 
 		entire_site.append(merged)
 	
