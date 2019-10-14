@@ -130,6 +130,11 @@ def compile_page(templates, config, page, extra):
 		merged['templates'] = templates or None
 		merged['page'] = os.path.splitext(os.path.basename(page))[0]
 		merged['template'] = change_file_extension(merged['template'], '.html')
+
+		if 'sitestructure' in merged:
+			with open(merged['sitestructure'],"r") as f:
+				merged['sitestructure'] = json.load(f)
+
 		return merged
 
 	except Exception as e:
