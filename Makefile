@@ -1,4 +1,4 @@
-.PHONY: clean build lint install
+.PHONY: clean build lint install test
 
 default: test
 
