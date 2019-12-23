@@ -59,7 +59,11 @@ def compile_page(templates, config, page, extra):
 		markdown_extensions = []
 
 	merged['content_raw'] = md
-	merged['content'] = BeautifulSoup(markdown(md, extensions=markdown_extensions), 'html.parser').prettify()
+
+	if 'process_raw' in merged:
+		merged['content'] = merged['content_raw']
+	else:
+		merged['content'] = BeautifulSoup(markdown(md, extensions=markdown_extensions), 'html.parser').prettify()
 
 	if 'canonical' not in raw_markdown.keys():
 		page_path = page
