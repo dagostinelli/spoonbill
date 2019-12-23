@@ -4,12 +4,34 @@ from . import commands
 import sys
 from datetime import date
 import traceback
+import json
 
 copyright_string = '%(prog)s %(version)s Copyright ' + str(date.today().year) + ' Darryl T. Agostinelli. All Rights Reserved.'
 
 
 def main():
 	return spoonbill(prog_name="spoonbill")
+
+
+def process_extra(extra):
+	extra_config = dict()
+	if extra:
+		for item in extra:
+			x = item.split('=')
+
+			key = x[0]
+			val = x[1]
+
+			# see if val is json
+			try:
+				val = json.loads(val)
+			except:
+				# not json
+				pass
+
+			extra_config[key] = val
+
+	return extra_config
 
 
 @click.group()
@@ -51,7 +73,7 @@ def spoonbill(ctx, verbose, debug, *args, **kwargs):
 def compile(templates, config, page, extra):
 	"""Compile a single markdown file to html"""
 	try:
-		print(commands.compile(templates, config, page, extra))
+		print(commands.compile(templates, config, page, process_extra(extra)))
 	except Exception as e:
 		sys.stderr.write('Error processing page: ' + str(page) + ' : ' + str(e))
 		traceback.print_exc()
@@ -64,7 +86,7 @@ def compile(templates, config, page, extra):
 @click.argument('extra', nargs=-1)
 def structure(config, path, extra):
 	"""Alias for sitestructure"""
-	print(commands.sitestructure(config, path, extra))
+	print(commands.sitestructure(config, path, process_extra(extra)))
 
 
 @spoonbill.command()
@@ -74,7 +96,7 @@ def structure(config, path, extra):
 def sitestructure(config, path, extra):
 	"""Read all markdown files and make a site structure file"""
 	try:
-		print(commands.sitestructure(config, path, extra))
+		print(commands.sitestructure(config, path, process_extra(extra)))
 	except Exception as e:
 		sys.stderr.write('Error processing path: ' + str(path) + ' : ' + str(e))
 		traceback.print_exc()

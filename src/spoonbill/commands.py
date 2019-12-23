@@ -24,24 +24,7 @@ def render_page(templates, template, **data):
 	return template.render(data)
 
 
-def compile_page(templates, config, page, extra):
-	extra_config = dict()
-	if extra:
-		for item in extra:
-			x = item.split('=')
-
-			key = x[0]
-			val = x[1]
-
-			# see if val is json
-			try:
-				val = json.loads(val)
-			except:
-				# not json
-				pass
-
-			extra_config[key] = val
-
+def compile_page(templates, config, page, extra_config):
 	with open(config) as defaults_file:
 		default_config = json.load(defaults_file)
 
