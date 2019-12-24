@@ -29,7 +29,7 @@ setup_options = dict(
 	test_suite='tests',
 	entry_points={
 		'console_scripts': [
-			'spoonbill=spoonbill.cli:main',
+			'spoonbill=spoonbill:main',
 		]
 	}
 )
