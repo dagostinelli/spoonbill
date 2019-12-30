@@ -20,13 +20,16 @@ def change_file_extension(p, ext):
 def render_page(templates, template, **data):
 	environment = jinja2.Environment(loader=jinja2.FileSystemLoader(templates))
 	preprocessed = environment.get_template(template).render(data)
-	template = jinja2.Template(preprocessed)
+	template = environment.from_string(preprocessed)
 	return template.render(data)
 
 
 def compile_page(templates, config, page, extra_config):
-	with open(config) as defaults_file:
-		default_config = json.load(defaults_file)
+	if config:
+		with open(config) as defaults_file:
+			default_config = json.load(defaults_file)
+	else:
+		default_config = dict()
 
 	raw_markdown = frontmatter.load(page)
 	md = raw_markdown.content
@@ -35,6 +38,10 @@ def compile_page(templates, config, page, extra_config):
 	merged.update(default_config)
 	merged.update(extra_config)
 	merged.update(raw_markdown)
+
+	# mandatory attributes
+	if 'canonical' not in merged:
+		merged['canonical'] = None
 
 	if 'markdown_extensions' in merged:
 		markdown_extensions = merged['markdown_extensions']
@@ -55,9 +62,9 @@ def compile_page(templates, config, page, extra_config):
 			page_path = page_path[page_path.find(merged['canonical_remove_path_prefix']) + len(merged['canonical_remove_path_prefix']):]
 
 		if 'canonical_relative_path' in merged:
-			merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], merged['canonical_relative_path'])
+			merged['canonical'] = urllib.parse.urljoin(merged['canonical'], merged['canonical_relative_path'])
 		else:
-			merged['canonical'] = urllib.parse.urljoin(default_config['canonical'], change_file_extension(page_path, '.html'))
+			merged['canonical'] = urllib.parse.urljoin(merged['canonical'], change_file_extension(page_path, '.html'))
 
 	if 'updated' not in merged.keys():
 		(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(page)
