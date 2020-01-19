@@ -10,6 +10,17 @@ import glob
 from dateutil.parser import parse as parsedatetime
 
 
+def ensure_a_file_extension(p, default_extension):
+	basefilename = os.path.splitext(os.path.basename(p))[0]
+	basefileext = os.path.splitext(os.path.basename(p))[1]
+	if (basefileext == ''):
+		filename = basefilename + default_extension
+	else:
+		filename = basefilename + basefileext
+	filename = os.path.join(os.path.dirname(p), filename)
+	return filename
+
+
 def change_file_extension(p, ext):
 	basefilename = os.path.splitext(os.path.basename(p))[0]
 	filename = basefilename + ext
@@ -81,8 +92,7 @@ def compile_page(templates, config, page, extra_config):
 	merged['templates'] = templates or None
 	merged['page'] = os.path.splitext(os.path.basename(page))[0]
 
-	# don't change the file extension anymore
-	# merged['template'] = change_file_extension(merged['template'], '.html')
+	merged['template'] = ensure_a_file_extension(merged['template'], '.html')
 
 	if 'sitestructure' in merged:
 		with open(merged['sitestructure'], "r") as f:
