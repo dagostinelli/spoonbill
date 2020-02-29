@@ -106,9 +106,10 @@ def sitestructure(config, path, extra):
 @spoonbill.command()
 @click.argument('input', type=click.File('rb'))
 @click.option('-o', '--out', type=click.Path(writable=True))
-def archive(input, out):
+@click.option('--ignore-errors', is_flag=True, default=False)
+def archive(input, out, ignore_errors):
 	"""Given an html file, combine all of the images, css and js into a single file"""
-	code = archivecmd.archive(input.name, input.read())
+	code = archivecmd.archive(input.name, input.read(), ignore_errors=ignore_errors)
 	if out:
 		with open(out, 'w') as out_file:
 			out_file.write(code)

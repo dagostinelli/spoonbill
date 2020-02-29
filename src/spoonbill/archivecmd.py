@@ -64,11 +64,11 @@ def _get_resource(resource_url):
 	return mimetype, data
 
 
-def archive(page_path, page_text):
+def archive(page_path, page_text, **kwargs):
 	ignore_images = False
 	ignore_css = False
 	ignore_js = False
-	# ignore_errors = False
+	ignore_errors = kwargs['ignore_errors'] if 'ignore_errors' in kwargs else False
 
 	soup = BeautifulSoup(page_text, features="html.parser")
 
@@ -102,7 +102,10 @@ def archive(page_path, page_text):
 			tag_mime, tag_data = _get_resource(fullpath)
 			encoded_resource = make_data_uri(tag_mime, tag_data)
 		except:
-			raise
+			if not ignore_errors:
+				raise
+			else:
+				continue
 
 		if tag.name == 'link':
 			tag['href'] = encoded_resource
