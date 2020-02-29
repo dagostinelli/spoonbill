@@ -1,6 +1,6 @@
 import logging
 import click
-from . import commands
+from . import commands, archivecmd
 import sys
 from datetime import date
 import traceback
@@ -101,6 +101,18 @@ def sitestructure(config, path, extra):
 		sys.stderr.write('Error processing path: ' + str(path) + ' : ' + str(e))
 		traceback.print_exc()
 		exit(1)
+
+
+@spoonbill.command()
+@click.argument('input', type=click.File('rb'))
+@click.option('-o', '--out', type=click.Path(writable=True))
+def archive(input, out):
+	"""Given an html file, combine all of the images, css and js into a single file"""
+	code = archivecmd.archive(input.name, input.read())
+	if out:
+		with open(out, 'w') as out_file:
+			out_file.write(code)
+	click.echo(code)
 
 
 if __name__ == "__main__":

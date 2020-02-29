@@ -10,7 +10,8 @@ requirements = [
 	'beautifulsoup4',
 	'markdown',
 	'python-frontmatter',
-	'python-dateutil'
+	'python-dateutil',
+	'requests'
 ]
 
 setup_options = dict(
