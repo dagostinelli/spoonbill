@@ -1,6 +1,6 @@
 import logging
 import click
-from . import commands, pack
+from . import commands, pack as packcmd
 import sys
 from datetime import date
 import traceback
@@ -130,7 +130,7 @@ def sitestructure(config, path, extra):
 @click.option('--ignore-errors', is_flag=True, default=False)
 def pack(input, out, ignore_errors):
 	"""Given an html file, combine all of the images, css and js into a single file"""
-	code = archivecmd.pack(input.name, input.read(), ignore_errors=ignore_errors)
+	code = packcmd.pack(input.name, input.read(), ignore_errors=ignore_errors)
 	if out:
 		with open(out, 'w') as out_file:
 			out_file.write(code)
