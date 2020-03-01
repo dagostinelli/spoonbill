@@ -16,7 +16,8 @@ def main():
 def process_extra(extra):
 	extra_config = dict()
 	if extra:
-		for item in extra:
+		extras = extra.split(',')
+		for item in extras:
 			x = item.split('=')
 
 			key = x[0]
