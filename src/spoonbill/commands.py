@@ -35,12 +35,15 @@ def render_page(templates, template, **data):
 	return template.render(data)
 
 
-def compile_page(templates, config, page, extra_config):
+def compile_page(page, page_text, templates, config, extra_config):
 	if config:
 		with open(config) as defaults_file:
 			default_config = json.load(defaults_file)
 	else:
 		default_config = dict()
+
+	if not templates:
+		templates = os.getcwd()
 
 	raw_markdown = frontmatter.load(page)
 	md = raw_markdown.content
@@ -53,6 +56,9 @@ def compile_page(templates, config, page, extra_config):
 	# mandatory attributes
 	if 'canonical' not in merged:
 		merged['canonical'] = None
+
+	if 'template' not in merged:
+		merged['template'] = 'default.html'
 
 	if 'markdown_extensions' in merged:
 		markdown_extensions = merged['markdown_extensions']
@@ -101,8 +107,8 @@ def compile_page(templates, config, page, extra_config):
 	return merged
 
 
-def compile(templates, config, page, extra):
-	merged = compile_page(templates, config, page, extra)
+def compile(page, page_text, templates, config, extra):
+	merged = compile_page(page, page_text, templates, config, extra)
 	final = render_page(**merged)
 	return final
 

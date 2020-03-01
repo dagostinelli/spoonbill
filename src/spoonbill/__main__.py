@@ -1,6 +1,6 @@
 import logging
 import click
-from . import commands, archivecmd
+from . import commands, pack
 import sys
 from datetime import date
 import traceback
@@ -81,6 +81,26 @@ def compile(templates, config, page, extra):
 
 
 @spoonbill.command()
+@click.argument('page', type=click.File('rb'))
+@click.option('--template-dir', type=click.Path(writable=False))
+@click.option('-t', '--template', type=click.Path(writable=False))
+@click.option('-c', '--config', type=click.Path(writable=False))
+@click.option('-o', '--out', type=click.Path(writable=True))
+@click.option('--ignore-errors', is_flag=True, default=False)
+@click.option('--inline-config')
+def render(page, template_dir, config, out, template, inline_config, ignore_errors):
+	"""Render a markdown file to html"""
+	inline_config = process_extra(inline_config)
+	if template:
+		inline_config['template'] = template
+	code = commands.compile(page.name, page.read(), template_dir, config, inline_config)
+	if out:
+		with open(out, 'w') as out_file:
+			out_file.write(code)
+	click.echo(code)
+
+
+@spoonbill.command()
 @click.argument('config')
 @click.argument('path')
 @click.argument('extra', nargs=-1)
@@ -107,9 +127,9 @@ def sitestructure(config, path, extra):
 @click.argument('input', type=click.File('rb'))
 @click.option('-o', '--out', type=click.Path(writable=True))
 @click.option('--ignore-errors', is_flag=True, default=False)
-def archive(input, out, ignore_errors):
+def pack(input, out, ignore_errors):
 	"""Given an html file, combine all of the images, css and js into a single file"""
-	code = archivecmd.archive(input.name, input.read(), ignore_errors=ignore_errors)
+	code = archivecmd.pack(input.name, input.read(), ignore_errors=ignore_errors)
 	if out:
 		with open(out, 'w') as out_file:
 			out_file.write(code)

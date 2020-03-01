@@ -28,6 +28,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Since the code was merged, it also falls under the spoonbill license, which is
+# also an MIT license (see LICENSE file)
+
 import os
 from bs4 import BeautifulSoup
 import urllib.parse
@@ -64,10 +67,10 @@ def _get_resource(resource_url):
 	return mimetype, data
 
 
-def archive(page_path, page_text, **kwargs):
-	ignore_images = False
-	ignore_css = False
-	ignore_js = False
+def pack(page_path, page_text, **kwargs):
+	ignore_images = kwargs['ignore_images'] if 'ignore_images' in kwargs else False
+	ignore_css = kwargs['ignore_css'] if 'ignore_css' in kwargs else False
+	ignore_js = kwargs['ignore_js'] if 'ignore_js' in kwargs else False
 	ignore_errors = kwargs['ignore_errors'] if 'ignore_errors' in kwargs else False
 
 	soup = BeautifulSoup(page_text, features="html.parser")
