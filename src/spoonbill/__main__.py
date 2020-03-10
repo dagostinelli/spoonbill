@@ -16,8 +16,7 @@ def main():
 def process_extra(extra):
 	extra_config = dict()
 	if extra:
-		extras = extra.split(',')
-		for item in extras:
+		for item in extra:
 			x = item.split('=')
 
 			key = x[0]
@@ -74,7 +73,10 @@ def spoonbill(ctx, verbose, debug, *args, **kwargs):
 def compile(templates, config, page, extra):
 	"""Compile a single markdown file to html"""
 	try:
-		print(commands.compile(templates, config, page, process_extra(extra)))
+		with open(page, "r") as page_file:
+			page_text = page_file.read()
+		code = commands.compile(page, page_text, templates, config, process_extra(extra))
+		click.echo(code)
 	except Exception as e:
 		sys.stderr.write('Error processing page: ' + str(page) + ' : ' + str(e))
 		traceback.print_exc()
@@ -117,7 +119,8 @@ def structure(config, path, extra):
 def sitestructure(config, path, extra):
 	"""Read all markdown files and make a site structure file"""
 	try:
-		print(commands.sitestructure(config, path, process_extra(extra)))
+		code = commands.sitestructure(config, path, process_extra(extra))
+		click.echo(code)
 	except Exception as e:
 		sys.stderr.write('Error processing path: ' + str(path) + ' : ' + str(e))
 		traceback.print_exc()
