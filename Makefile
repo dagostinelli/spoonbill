@@ -20,10 +20,11 @@ prep: $(venv_directory)
 $(venv_directory):
 	@python3 -m venv venv
 	$(venv_directory)/bin/pip install --upgrade pip
+	$(venv_directory)/bin/pip install flake8
 	@$(venv_directory)/bin/python3 setup.py install
 
 lint:
-	@flake8
+	@$(venv_directory)/bin/flake8
 
 test: prep lint
 	@python3 setup.py test
