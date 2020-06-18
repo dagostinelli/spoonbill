@@ -14,24 +14,11 @@ def main():
 
 
 def process_extra(extra):
-	extra_config = dict()
-	if extra:
-		for item in extra:
-			x = item.split('=')
-
-			key = x[0]
-			val = x[1]
-
-			# see if val is json
-			try:
-				val = json.loads(val)
-			except:
-				# not json
-				pass
-
-			extra_config[key] = val
-
-	return extra_config
+	try:
+		return json.loads(extra)
+	except:
+		# not json
+		return dict()
 
 
 @click.group()
@@ -63,24 +50,6 @@ def spoonbill(ctx, verbose, debug, *args, **kwargs):
 		datefmt='%H:%M:%S',
 		handlers=handlers
 	)
-
-
-@spoonbill.command()
-@click.argument('templates')
-@click.argument('config')
-@click.argument('page')
-@click.argument('extra', nargs=-1)
-def compile(templates, config, page, extra):
-	"""Compile a single markdown file to html"""
-	try:
-		with open(page, "r") as page_file:
-			page_text = page_file.read()
-		code = commands.compile(page, page_text, templates, config, process_extra(extra))
-		click.echo(code)
-	except Exception as e:
-		sys.stderr.write('Error processing page: ' + str(page) + ' : ' + str(e))
-		traceback.print_exc()
-		exit(1)
 
 
 @spoonbill.command()
