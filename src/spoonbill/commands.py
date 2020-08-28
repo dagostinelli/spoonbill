@@ -29,7 +29,7 @@ def change_file_extension(p, ext):
 
 
 def render_page(templates, template, **data):
-	environment = jinja2.Environment(loader=jinja2.FileSystemLoader(templates))
+	environment = jinja2.Environment(loader=jinja2.FileSystemLoader(templates), extensions=['jinja2.ext.loopcontrols'])
 	preprocessed = environment.get_template(template).render(data)
 	template = environment.from_string(preprocessed)
 	return template.render(data)
