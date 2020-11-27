@@ -72,11 +72,25 @@ def _determine_fullpath(page_path, tag_url):
 	tag_url_parsed = urllib.parse.urlparse(tag_url)
 	if tag_url_parsed.scheme in ['http', 'https']:
 		fullpath = tag_url
+		return fullpath
 	else:
-		parent_path = os.path.dirname(os.path.realpath(page_path))
-		fullpath = os.path.normpath(os.path.join(parent_path, tag_url))
+		fullpath = tag_url
 
-	return fullpath
+		if os.path.exists(fullpath):
+			return fullpath
+
+		parent_path = os.path.dirname(os.path.realpath(page_path))
+
+		fullpath = os.path.normpath(os.path.join(parent_path, tag_url))
+		if os.path.exists(fullpath):
+			return fullpath
+
+		fullpath = os.path.normpath(os.path.join(parent_path, tag_url.strip('/')))
+		print(parent_path, fullpath)
+		if os.path.exists(fullpath):
+			return fullpath
+
+		raise(Exception(tag_url + ' does not exist'))
 
 
 def _pack_css(css_path, css):

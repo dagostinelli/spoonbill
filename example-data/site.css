@@ -4,5 +4,5 @@ body {
 }
 
 .bob {
-	background-image: url('road.png');
+	background-image: url('/road.png');
 }
