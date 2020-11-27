@@ -37,6 +37,7 @@ import urllib.parse
 import base64
 import mimetypes
 from requests import get as requests_get
+import cssutils
 
 
 def make_data_uri(mimetype: str, data: bytes) -> str:
@@ -67,6 +68,31 @@ def _get_resource(resource_url):
 	return mimetype, data
 
 
+def _determine_fullpath(page_path, tag_url):
+	tag_url_parsed = urllib.parse.urlparse(tag_url)
+	if tag_url_parsed.scheme in ['http', 'https']:
+		fullpath = tag_url
+	else:
+		parent_path = os.path.dirname(os.path.realpath(page_path))
+		fullpath = os.path.normpath(os.path.join(parent_path, tag_url))
+
+	return fullpath
+
+
+def _pack_css(css_path, css):
+
+	def replacer(resource_url):
+		fullpath = _determine_fullpath(css_path, resource_url)
+		tag_mime, tag_data = _get_resource(fullpath)
+		encoded_resource = make_data_uri(tag_mime, tag_data)
+		return encoded_resource
+
+	stylesheet = cssutils.parseString(css)
+	cssutils.replaceUrls(stylesheet, replacer)
+
+	return str.encode(css)
+
+
 def pack(page_path, page_text, **kwargs):
 	ignore_images = kwargs['ignore_images'] if 'ignore_images' in kwargs else False
 	ignore_css = kwargs['ignore_css'] if 'ignore_css' in kwargs else False
@@ -94,15 +120,12 @@ def pack(page_path, page_text, **kwargs):
 	for tag in tags:
 		tag_url = tag['href'] if tag.name == 'link' else tag['src']
 		try:
-			tag_url_parsed = urllib.parse.urlparse(tag_url)
-			if tag_url_parsed.scheme in ['http', 'https']:
-				fullpath = tag_url
-			else:
-				directory = os.path.dirname(os.path.realpath(page_path))
-				fullpath = directory + '/' + tag_url
-				fullpath = os.path.normpath(fullpath)
-
+			fullpath = _determine_fullpath(page_path, tag_url)
 			tag_mime, tag_data = _get_resource(fullpath)
+
+			if 'css' in tag_mime:
+				tag_data = _pack_css(fullpath, tag_data.decode("utf-8"))
+
 			encoded_resource = make_data_uri(tag_mime, tag_data)
 		except:
 			if not ignore_errors:

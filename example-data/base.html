@@ -8,7 +8,7 @@
 		<title>{{title}}</title>
 		<meta name="description" content="{{description}}">
 		<link rel="canonical" href="{{canonical}}">
-		<link rel="stylesheet" href="{{root}}/css/site.css">
+		<link rel="stylesheet" href="example-data/site.css">
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -26,12 +26,12 @@
 		{% block css %}{% endblock %}
 	</head>
 	<body>
-		{% block precontent %}{{precontent}}{% endblock %}	
+		{% block precontent %}{{precontent}}{% endblock %}
 		{% block content %}{{content}}{% endblock %}
-		{% block postcontent %}{{postcontent}}{% endblock %}	
+		{% block postcontent %}{{postcontent}}{% endblock %}
 
 		{% block script %}
 		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-		{% endblock %}		
+		{% endblock %}
 	</body>
 </html>

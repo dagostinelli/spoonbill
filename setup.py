@@ -11,7 +11,8 @@ requirements = [
 	'markdown',
 	'python-frontmatter',
 	'python-dateutil',
-	'requests'
+	'requests',
+	'cssutils'
 ]
 
 setup_options = dict(
