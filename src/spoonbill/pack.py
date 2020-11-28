@@ -119,13 +119,13 @@ def _determine_fullpath(page_path, tag_url, root_dir):
 		raise(Exception(tag_url + ' does not exist'))
 
 
-def _pack_css(css_path, css):
+def _pack_css(css_path, css, root_dir):
 
 	def replacer(resource_url):
 		if not _can_encode(resource_url):
 			return resource_url
 
-		fullpath = _determine_fullpath(css_path, resource_url)
+		fullpath = _determine_fullpath(css_path, resource_url, root_dir)
 		tag_mime, tag_data = _get_resource(fullpath)
 		encoded_resource = make_data_uri(tag_mime, tag_data)
 		return encoded_resource
@@ -168,7 +168,7 @@ def pack(page_path, page_text, **kwargs):
 			tag_mime, tag_data = _get_resource(fullpath)
 
 			if 'css' in tag_mime:
-				tag_data = _pack_css(fullpath, tag_data.decode("utf-8"))
+				tag_data = _pack_css(fullpath, tag_data.decode("utf-8"), root_dir)
 
 			encoded_resource = make_data_uri(tag_mime, tag_data)
 		except:
