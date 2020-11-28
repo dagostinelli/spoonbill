@@ -39,6 +39,11 @@ import base64
 import mimetypes
 from requests import get as requests_get
 import cssutils
+import logging
+
+
+# disable logging for cssutils
+cssutils.log.setLevel(logging.CRITICAL)
 
 
 def _can_encode(resource_url):
