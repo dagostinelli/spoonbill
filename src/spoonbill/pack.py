@@ -34,10 +34,31 @@
 import os
 from bs4 import BeautifulSoup
 import urllib.parse
+from urllib.parse import urlparse
 import base64
 import mimetypes
 from requests import get as requests_get
 import cssutils
+
+
+def _can_encode(resource_url):
+	if os.path.exists(resource_url):
+		return True
+
+	print(urlparse(resource_url))
+
+	parsed = urlparse(resource_url)
+
+	if parsed.scheme == "":
+		return False
+
+	if parsed.scheme == "data":
+		return False
+
+	if parsed.scheme != "":
+		return True
+
+	return False
 
 
 def make_data_uri(mimetype: str, data: bytes) -> str:
@@ -96,6 +117,9 @@ def _determine_fullpath(page_path, tag_url):
 def _pack_css(css_path, css):
 
 	def replacer(resource_url):
+		if not _can_encode(resource_url):
+			return resource_url
+
 		fullpath = _determine_fullpath(css_path, resource_url)
 		tag_mime, tag_data = _get_resource(fullpath)
 		encoded_resource = make_data_uri(tag_mime, tag_data)
