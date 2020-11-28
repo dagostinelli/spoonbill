@@ -50,8 +50,6 @@ def _can_encode(resource_url):
 	if os.path.exists(resource_url):
 		return True
 
-	print(urlparse(resource_url))
-
 	parsed = urlparse(resource_url)
 
 	if parsed.scheme == "":
@@ -94,7 +92,7 @@ def _get_resource(resource_url):
 	return mimetype, data
 
 
-def _determine_fullpath(page_path, tag_url):
+def _determine_fullpath(page_path, tag_url, root_dir):
 	tag_url_parsed = urllib.parse.urlparse(tag_url)
 	if tag_url_parsed.scheme in ['http', 'https']:
 		fullpath = tag_url
@@ -111,8 +109,10 @@ def _determine_fullpath(page_path, tag_url):
 		if os.path.exists(fullpath):
 			return fullpath
 
-		fullpath = os.path.normpath(os.path.join(parent_path, tag_url.strip('/')))
-		print(parent_path, fullpath)
+		if tag_url[0] == '/':
+			fullpath = os.path.normpath(os.path.join(root_dir, tag_url.strip('/')))
+		else:
+			fullpath = os.path.normpath(os.path.join(parent_path, tag_url.strip('/')))
 		if os.path.exists(fullpath):
 			return fullpath
 
@@ -141,6 +141,7 @@ def pack(page_path, page_text, **kwargs):
 	ignore_css = kwargs['ignore_css'] if 'ignore_css' in kwargs else False
 	ignore_js = kwargs['ignore_js'] if 'ignore_js' in kwargs else False
 	ignore_errors = kwargs['ignore_errors'] if 'ignore_errors' in kwargs else False
+	root_dir = kwargs['root_dir'] if 'root_dir' in kwargs else os.path.getcwd()
 
 	soup = BeautifulSoup(page_text, features="html.parser")
 
@@ -163,7 +164,7 @@ def pack(page_path, page_text, **kwargs):
 	for tag in tags:
 		tag_url = tag['href'] if tag.name == 'link' else tag['src']
 		try:
-			fullpath = _determine_fullpath(page_path, tag_url)
+			fullpath = _determine_fullpath(page_path, tag_url, root_dir)
 			tag_mime, tag_data = _get_resource(fullpath)
 
 			if 'css' in tag_mime:

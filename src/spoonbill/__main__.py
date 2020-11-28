@@ -98,11 +98,12 @@ def sitestructure(config, path, extra):
 
 @spoonbill.command()
 @click.argument('input', type=click.File('rb'))
+@click.option('--root-dir', type=click.Path(writable=False))
 @click.option('-o', '--out', type=click.Path(writable=True))
 @click.option('--ignore-errors', is_flag=True, default=False)
-def pack(input, out, ignore_errors):
+def pack(input, root_dir, out, ignore_errors):
 	"""Given an html file, combine all of the images, css and js into a single file"""
-	code = packcmd.pack(input.name, input.read(), ignore_errors=ignore_errors)
+	code = packcmd.pack(input.name, input.read(), ignore_errors=ignore_errors, root_dir=root_dir)
 	if out:
 		with open(out, 'w') as out_file:
 			out_file.write(code)
