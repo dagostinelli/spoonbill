@@ -109,7 +109,7 @@ def _determine_fullpath(page_path, tag_url, root_dir):
 		if os.path.exists(fullpath):
 			return fullpath
 
-		if tag_url[0] == '/':
+		if tag_url[0] == '/' and root_dir:
 			fullpath = os.path.normpath(os.path.join(root_dir, tag_url.strip('/')))
 		else:
 			fullpath = os.path.normpath(os.path.join(parent_path, tag_url.strip('/')))
